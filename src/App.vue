@@ -51,7 +51,7 @@ export default{
       const sendData = {
         name:name,
       };
-      await axios.put("https://pacific-oasis-86450.herokuapp.com/item/" + id, sendData);
+      await axios.put("https://pacific-oasis-86450.herokuapp.com/api/item/" + id, sendData);
       this.getTodos();
     },
 
