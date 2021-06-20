@@ -6,19 +6,15 @@
           <p>Todo List</p>
         </div>
         <div class="add">
-          <input type="text" v-model="name" class="input-add"/>
-          <button @click="doadd" class="button-add">追加</button>
+          <input type="text" v-model="newTodo" class="input-add"/>
+          <button class="button-add" @click="doadd">追加</button>
         </div>
-        <div class="update">
-          <ul>
-            <li v-for="(item,index) in list" :key="index">
-              <input type="text" class="input-update"/>
+        <div class="update"  v-for="item in todos" :key="item.id">
+              <input type="text" v-model="item.name" class="input-update"/>
               <div>
-                <button @click="doupdate" class="button-update">更新</button>
-                <button @click="dodelete" class="button-delete">削除</button>
+                <button @click="doupdate(item.id,item.name)" class="button-update">更新</button>
+                <button @click="dodelete(item.id)" class="button-delete">削除</button>
               </div>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
@@ -26,33 +22,55 @@
 </template>
 
 <script>
+import axios from "axios";
 export default{
   data() {
     return{
-      name:"",
-      list: [
-        {name:"todo"}
-      ]
+     todos:[
+    
+     ],
+
+       newTodo:""
     };
   },
 
   methods: {
-    doadd(){
-      this.list.push({
-        name:this.name
-      });
+    async doadd(){
+      console.log(this.newTodo);
+      const sendData = {
+        name: this.newTodo,
+      };
+      await axios.post("https://pacific-oasis-86450.herokuapp.com/api/item",sendData);
+      this.getTodos();
+      this.newTodo = "";
+      
+      
     },
 
-    doupdate(){
-      this.list[0] = "name"
+    async doupdate(id,name){
+      const sendData = {
+        name:name,
+      };
+      await axios.put("https://pacific-oasis-86450.herokuapp.com/item/" + id, sendData);
+      this.getTodos();
     },
 
-    dodelete(){
-      this.list.splice(0,1);
-    }
+    async dodelete(id){
+      await axios.delete("https://pacific-oasis-86450.herokuapp.com/api/item/" + id);
+      this.getTodos();
+    },
 
-  }
-};
+    async getTodos(){
+      console.log("データを取得しました");
+      const response = await axios.get("https://pacific-oasis-86450.herokuapp.com/api/item");
+      this.todos = response.data.data;
+    },
+  },
+
+  mounted(){
+    this.getTodos();
+  },
+}
 
 
 </script>
